@@ -1,9 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 
 #define MAX_ROWS 100
 #define MAX_COLS 100
+
+enum Direction {
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
+};
+
+struct Thread {
+    pthread_t thread_id;
+    int row;
+    int col;
+    int history[MAX_ROWS][2];
+    Direction direction;
+    bool success;
+};
 
 // Function to read the maze from a file
 // params: filename - the name of the file
@@ -61,6 +78,172 @@ void print_matrix(int maze[MAX_ROWS][MAX_COLS][2], int rows, int cols) {
     }
 }
 
+// Function to verify if the next position is out of boundaries
+// params: row - the row of the next position
+//         column - the column of the next position
+//         MaxRows - the maximum number of rows in the maze
+//         MaxCols - the maximum number of columns in the maze
+// returns: true if the next position is out of boundaries, false otherwise
+bool verifyBoundaries(int row, int column, int MaxRows, int MaxCols){
+    // return row < 0 || row >= MaxRows || column < 0 || column >= MaxCols;
+}
+
+// Function to verify alternative paths in the maze
+// params: maze - the matrix representing the maze
+//         row - the row of the thread
+//         column - the column of the thread
+//         MaxRows - the maximum number of rows in the maze
+//         MaxCols - the maximum number of columns in the maze
+// returns: void
+int verifyAlternativePaths(int maze[MAX_ROWS][MAX_COLS][2], int row, int column, int MaxRows, int MaxCols){
+    // Check all directions and create threads for each one
+    Direction dir;
+
+    if (!verifyBoundaries(row+1, column, MaxRows, MaxCols) && maze[row+1][column][0] == 1){
+        dir = DOWN;
+    }
+    if (!verifyBoundaries(row-1, column, MaxRows, MaxCols) && maze[row-1][column][0] == 1){
+       dir = UP;
+    }
+    if (!verifyBoundaries(row, column+1, MaxRows, MaxCols) && maze[row][column+1][0] == 1){
+        dir = RIGHT;
+    }
+    if (!verifyBoundaries(row, column-1, MaxRows, MaxCols) && maze[row][column-1][0] == 1){
+        dir = LEFT;
+    }
+
+    // Create thread
+    // pthread_create(&thread->thread_id, NULL, move, (void *)thread);
+}
+
+// Function to verify if there is a wall in the next position
+// params: maze - the matrix representing the maze
+//         row - the row of the next position
+//         column - the column of the next position
+//         MaxRows - the maximum number of rows in the maze
+//         MaxCols - the maximum number of columns in the maze
+// returns: true if there is a wall in the next position, false otherwise
+bool verifyWall(int maze[MAX_ROWS][MAX_COLS][2], int row, int column, int MaxRows, int MaxCols){
+    // Verify if there is a wall in the next position or if it is out of boundaries
+    bool outOfBoundaries = verifyBoundaries(row, column, MaxRows, MaxCols);
+    return outOfBoundaries && maze[row][column][0] == 0;
+}
+
+
+// Function to move the thread in the maze
+// params: maze - the matrix representing the maze
+//         direction - the direction to move the thread
+//         initRow - the initial row of the thread
+//         initCol - the initial column of the thread
+//         MaxRows - the maximum number of rows in the maze
+//         MaxCols - the maximum number of columns in the maze
+// returns: void
+void *move(int maze[MAX_ROWS][MAX_COLS][2], Direction direction, int initRow, int initCol, int MaxRows, int MaxCols){
+    // -------------------------------------------------------------------------------------
+    // Esta es una opción más corta y eficiente en teoría (o esa es la intención jaja) 
+    // La otra opción está comentada abajo
+    // -------------------------------------------------------------------------------------
+
+    // Create and initialize thread (struct)
+    struct *Thread thread = (struct *Thread)arg;// malloc(sizeof(struct Thread));
+    int positions[MAX_ROWS*MAX_COLS][2]; // [row, column]
+
+    // Initial position in the maze
+    int row, column = initRow, initCol;
+    
+    // Index for the positions array
+    int i = 1;
+
+    // Flags
+    bool wall = false;
+    bool success = false;
+
+    // Offset for the direction
+    int offset;
+    if (Direction == DOWN || Direction == RIGHT) offset = 1;
+    if (Direction == UP || Direction == LEFT) offset = -1;
+
+    while(true){
+        // Add position to history
+        positions[i][0] = row;
+        positions[i][1] = column;
+        i++;
+
+        if (Direction == DOWN || Direction == UP){
+            wall = verifyWall(maze, row+offset, column); // Verify if there is a wall in the next position
+            
+            if(!wall){ // If there is no wall in the next position move to it
+                success = maze[row+offset][column][1] == 1; // Verify if the next position is the exit
+                maze[row][column][0] == 0; // Mark the current position as visited
+                row += offset;
+            }
+        }
+        else if (Direction == RIGHT || Direction == LEFT){
+            wall = verifyWall(maze, row, column+offset); // Verify if there is a wall in the next position
+
+            if(!wall){ // If there is no wall in the next position move to it
+                success = maze[row][column+offset][1] == 1; // Verify if the next position is the exit
+                maze[row][column][0] == 0; // Mark the current position as visited
+                column += offset;
+            }
+        }
+
+        // If there is a wall, explote alternative paths and destroy the thread
+        if (wall){
+            verifyAlternativePaths(maze, row, column);
+            // terminar hilo
+            break;
+        }
+
+        // If the next position is the exit, break the loop
+        if (success){
+            thread->success = true;
+            break;
+        }
+    }
+
+    thread->history = positions;
+    
+    // -------------------------------------------------------------------------------------
+    // Esta es otra opción sin el offset, pero es más larga y redundante
+    // Solo hice el ejemplo con el caso de ir hacia abajo, pero es lo mismo para los demás casos
+    // Esta incompleta obvio, pero el resto es muy parecido al anterior
+    // -------------------------------------------------------------------------------------
+
+    // while(true){
+    //     // Verify next position is not a wall
+    //     switch (direction) {
+    //         case DOWN:
+    //             if(maze[row+1][column][0] == 1){
+    //                 if (maze[row+1][column][1] == 1){
+    //                     success = true;
+    //                 }
+    //                 row++;
+    //             }
+    //             else {
+    //                 wall = true;
+    //             }
+    //             break;
+    //         case LEFT:
+    //             break;
+    //         case RIGHT:
+    //             break;
+    //     }
+
+    // // Verify alternative paths in the new position
+    // verifyAlternativePaths(maze, row, column);
+    // }
+    
+}
+
+
+// Function to start the maze
+// params: maze - the matrix representing the maze
+// returns: void
+void start(int maze[MAX_ROWS][MAX_COLS][2]){
+    verifyAlternativePaths(maze, 0, 0);
+}
+
 // Main function
 int main() {
 
@@ -68,12 +251,10 @@ int main() {
     int rows, cols;
 
     char filename[100]; // Allocate memory for the filename
-
     printf("Filename: ");
     scanf("%s", filename); // Use %s to read a string
 
     read_maze(filename, maze, &rows, &cols);
-
     print_matrix(maze, rows, cols);
 
     return 0;
