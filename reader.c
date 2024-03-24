@@ -126,7 +126,7 @@ int verifyAlternativePaths(int maze[MAX_ROWS][MAX_COLS][2], int row, int column,
 bool verifyWall(int maze[MAX_ROWS][MAX_COLS][2], int row, int column, int MaxRows, int MaxCols){
     // Verify if there is a wall in the next position or if it is out of boundaries
     bool outOfBoundaries = verifyBoundaries(row, column, MaxRows, MaxCols);
-    return outOfBoundaries && maze[row][column][0] == 0;
+    return outOfBoundaries || maze[row][column][0] == 0;
 }
 
 
