@@ -1,2 +1,2 @@
-reader: reader.c
-	gcc -o reader reader.c
+maze: maze.c
+	gcc -o maze maze.c
