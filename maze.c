@@ -121,6 +121,7 @@ int verifyAlternativePaths(int maze[MAX_ROWS][MAX_COLS][2], int row, int column,
         //printf("NO PATH\n");
     }
     else{
+        // Create a thread for the new direction
         move(maze, dir, row+rowOffset, column+colOffset, MaxRows, MaxCols);
     }
 }
@@ -223,21 +224,6 @@ void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow
 
     // Free memory
     //free(thread);
-}
-
-// Function to move the thread in the maze
-
-void moveThread(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow, int initCol, int MaxRows, int MaxCols){
-    // Create and initialize thread (struct)
-    // struct Thread *thread = (struct Thread*)malloc(sizeof(struct Thread));
-    // thread->row = initRow;
-    // thread->col = initCol;
-    // thread->direction = direction;
-    // thread->success = false;
-
-    // // Create thread
-    // pthread_create(&thread->thread_id, NULL, move, (void *)thread);
-    move(maze, direction, initRow, initCol, MaxRows, MaxCols);
 }
 
 
