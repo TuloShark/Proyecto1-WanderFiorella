@@ -5,6 +5,7 @@
 #include <pthread.h>
 #include "lib/reader.h"
 
+
 enum Direction {
     UP,
     DOWN,
@@ -109,7 +110,6 @@ void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow
     // Esta es una opción más corta y eficiente en teoría (o esa es la intención jaja) 
     // La otra opción está comentada abajo
     // -------------------------------------------------------------------------------------
-
     // Create and initialize thread (struct)
     struct Thread *thread = (struct Thread*)malloc(sizeof(struct Thread));
      //(struct *Thread)arg;// malloc(sizeof(struct Thread));
@@ -183,15 +183,14 @@ void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow
 
 void moveThread(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow, int initCol, int MaxRows, int MaxCols){
     // Create and initialize thread (struct)
-    // struct Thread *thread = (struct Thread*)malloc(sizeof(struct Thread));
-    // thread->row = initRow;
-    // thread->col = initCol;
-    // thread->direction = direction;
-    // thread->success = false;
+    struct Thread *thread = (struct Thread*)malloc(sizeof(struct Thread));
+    thread->row = initRow;
+    thread->col = initCol;
+    thread->direction = direction;
+    thread->success = false;
 
-    // // Create thread
-    // pthread_create(&thread->thread_id, NULL, move, (void *)thread);
-    move(maze, direction, initRow, initCol, MaxRows, MaxCols);
+    // Create thread
+    pthread_create(&thread->thread_id, NULL, move, (void *)thread);
 }
 
 
