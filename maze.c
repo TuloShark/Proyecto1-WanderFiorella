@@ -5,6 +5,7 @@
 #include <pthread.h>
 #include "lib/reader.h"
 
+
 enum Direction {
     UP,
     DOWN,
@@ -21,29 +22,6 @@ struct Thread {
     enum Direction direction;
     bool success;
 };
-
-struct ThreadLinkedList {
-    struct Thread thread;
-    struct ThreadLinkedList *next;
-};
-
-// Global variables
-struct ThreadLinkedList threads[MAX_ROWS*MAX_COLS]; // Array of threads
-
-// Function to add a thread to the linked list
-// params: thread - the thread to add
-// returns: void
-void addThread(struct Thread thread){
-    struct ThreadLinkedList *newThread = (struct ThreadLinkedList*)malloc(sizeof(struct ThreadLinkedList));
-    newThread->thread = thread;
-    newThread->next = NULL;
-
-    struct ThreadLinkedList *current = threads;
-    while(current->next != NULL){
-        current = current->next;
-    }
-    current->next = newThread;
-}
 
 // Function to verify if the position is out of boundaries
 // params: row - the row of the position
@@ -83,42 +61,35 @@ int verifyAlternativePaths(int maze[MAX_ROWS][MAX_COLS][2], int row, int column,
     int rowOffset = 0;
     int colOffset = 0;
 
-    //printf("Row: %d, Column: %d\n", row, column);
+    printf("Row: %d, Column: %d\n", row, column);
 
     if (currentDirection != DOWN && !verifyBoundaries(row+1, column, MaxRows, MaxCols) && maze[row+1][column][0] == 1){
         dir = DOWN;
         noPath = false;
         rowOffset = 1;
-        //printf("DOWN\n");
+        printf("DOWN\n");
     }
     if (currentDirection != UP && !verifyBoundaries(row-1, column, MaxRows, MaxCols) && maze[row-1][column][0] == 1){
        dir = UP;
         noPath = false;
         rowOffset = -1;
-       //printf("UP\n");
+       printf("UP\n");
     }
     if (currentDirection != RIGHT && !verifyBoundaries(row, column+1, MaxRows, MaxCols) && maze[row][column+1][0] == 1){
         dir = RIGHT;
         noPath = false;
         colOffset = 1;
-        //printf("RIGHT\n");
+        printf("RIGHT\n");
     }
     if (currentDirection != LEFT && !verifyBoundaries(row, column-1, MaxRows, MaxCols) && maze[row][column-1][0] == 1){
         dir = LEFT;
         noPath = false;
         colOffset = -1;
-        //printf("LEFT\n");
+        printf("LEFT\n");
     }
 
-    // Verify if the position where the thread is going to move has been visited in 
-    // the same direction by another thread
-    // -----------------------------------------------------------------------------
-    // recorrer la lista de hilos y verificar si la posición ya ha sido visitada 
-    // en la misma dirección, si es así, no llamar a la función move
-    // -----------------------------------------------------------------------------
-
     if (noPath){
-        //printf("NO PATH\n");
+        printf("NO PATH\n");
     }
     else{
         // Create a thread for the new direction
@@ -140,12 +111,9 @@ void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow
     // Esta es una opción más corta y eficiente en teoría (o esa es la intención jaja) 
     // La otra opción está comentada abajo
     // -------------------------------------------------------------------------------------
-
     // Create and initialize thread (struct)
     struct Thread *thread = (struct Thread*)malloc(sizeof(struct Thread));
-    thread->direction = direction;
-    thread->success = false;
-
+     //(struct *Thread)arg;// malloc(sizeof(struct Thread));
 
     // Initial position in the maze
     int row = initRow;
@@ -173,22 +141,15 @@ void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow
 
         verifyAlternativePaths(maze, row, column, MaxRows, MaxCols, direction);
 
-        // printf("Row: %d, Column: %d\n", row, column);
+        printf("Row: %d, Column: %d\n", row, column);
 
-        // Check if the current position is the exit
-        success = maze[row][column][1] == 1;
-        // If the current position is the exit, break the loop
-        if (success){
-            printf("SUCCESS!!! YOU FOUND IT!!!\n");
-            thread->success = true;
-            break;
-        }
         
 
         if (direction == DOWN || direction == UP){
             wall = verifyWall(maze, row+offset, column, MaxRows, MaxCols); // Verify if there is a wall in the next position
             
             if(!wall){ // If there is no wall in the next position move to it
+                success = maze[row+offset][column][1] == 1; // Verify if the next position is the exit
                 row += offset;
             }
         }
@@ -196,34 +157,27 @@ void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow
             wall = verifyWall(maze, row, column+offset, MaxRows, MaxCols); // Verify if there is a wall in the next position
 
             if(!wall){ // If there is no wall in the next position move to it
+                success = maze[row][column+offset][1] == 1; // Verify if the next position is the exit
                 column += offset;
             }
         }
 
         // If there is a wall, explote alternative paths and destroy the thread
         if (wall){
-            //print_matrix(maze, MaxRows, MaxCols);
+            print_matrix(maze, MaxRows, MaxCols);
             verifyAlternativePaths(maze, row, column, MaxRows, MaxCols, NONE);
             
             // terminar hilo
             break;
         }
 
-        
+        // If the next position is the exit, break the loop
+        if (success){
+            printf("Success\n");
+            thread->success = true;
+            break;
+        }
     }
-
-    // Print thread info all in one line
-    printf("Thread: ");
-    for (int j = 0; j < i; j++){
-        printf("[%d, %d] ", thread->history[j][0], thread->history[j][1]);
-    }
-    printf(" -> Success: %d\n", thread->success);
-
-    // Add thread to the linked list
-    //addThread(*thread);
-
-    // Free memory
-    //free(thread);
 }
 
 
