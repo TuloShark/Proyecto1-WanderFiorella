@@ -109,6 +109,10 @@ int verifyAlternativePaths(int maze[MAX_ROWS][MAX_COLS][2], int row, int column,
         colOffset = -1;
         //printf("LEFT\n");
     }
+    if (currentDirection == NONE && row == 0 && column == 0){
+        rowOffset = 0;
+        colOffset = 0;
+    }
 
     // Verify if the position where the thread is going to move has been visited in 
     // the same direction by another thread
@@ -122,6 +126,7 @@ int verifyAlternativePaths(int maze[MAX_ROWS][MAX_COLS][2], int row, int column,
     }
     else{
         // Create a thread for the new direction
+        // printf("---------------------------------------------------\nNew thread!\n Direction: %d  Row: %d  Column: %d \n---------------------------------------------------\n ", dir, row+rowOffset, column+colOffset);
         move(maze, dir, row+rowOffset, column+colOffset, MaxRows, MaxCols);
     }
 }
@@ -152,7 +157,7 @@ void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow
     int column = initCol;
     
     // Index for the positions array
-    int i = 1;
+    int i = 0;
 
     // Flags
     bool wall = false;
@@ -173,7 +178,7 @@ void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow
 
         verifyAlternativePaths(maze, row, column, MaxRows, MaxCols, direction);
 
-        // printf("Row: %d, Column: %d\n", row, column);
+        printf("Row: %d, Column: %d ", row, column);
 
         // Check if the current position is the exit
         success = maze[row][column][1] == 1;
@@ -200,9 +205,14 @@ void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow
             }
         }
 
+        printf("Wall: %d\n", wall);
+
         // If there is a wall, explote alternative paths and destroy the thread
         if (wall){
             //print_matrix(maze, MaxRows, MaxCols);
+            printf("2 - Row: %d, Column: %d \n", row, column);
+            thread->history[i][0] = row;
+            thread->history[i][1] = column;
             verifyAlternativePaths(maze, row, column, MaxRows, MaxCols, NONE);
             
             // terminar hilo
@@ -231,7 +241,8 @@ void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow
 // params: maze - the matrix representing the maze
 // returns: void
 void start(int maze[MAX_ROWS][MAX_COLS][2], int MaxRows, int MaxCols){
-    verifyAlternativePaths(maze, 0, 0, MaxRows, MaxCols, -1);
+    verifyAlternativePaths(maze, 0, 0, MaxRows, MaxCols, NONE);
+    // move(maze, DOWN, 0, 0, MaxRows, MaxCols);
 }
 
 // Main function
