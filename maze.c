@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include "lib/reader.h"
+#include "lib/RAINBOW/src/C/rainbow.h"
 
 enum Direction {
     UP,
@@ -151,6 +152,9 @@ void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow
     thread->direction = direction;
     thread->success = false;
 
+    // Color of the thread
+    char *colorStr = setColor();
+
 
     // Initial position in the maze
     int row = initRow;
@@ -175,6 +179,7 @@ void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow
         i++;
 
         maze[row][column][0] = 0; // Mark the current position as visited
+        // paintMovement(column, row, colorStr); // Paint the movement in the maze
 
         verifyAlternativePaths(maze, row, column, MaxRows, MaxCols, direction);
 
@@ -213,6 +218,8 @@ void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow
             printf("2 - Row: %d, Column: %d \n", row, column);
             thread->history[i][0] = row;
             thread->history[i][1] = column;
+            // paintMovement(column, row, colorStr); // Paint the movement in the maze
+
             verifyAlternativePaths(maze, row, column, MaxRows, MaxCols, NONE);
             
             // terminar hilo
@@ -257,6 +264,7 @@ int main() {
 
     read_maze(filename, maze, &rows, &cols);
     print_matrix(maze, rows, cols);
+    // paintMaze(maze, cols, rows);
 
     start(maze, rows, cols);
 
