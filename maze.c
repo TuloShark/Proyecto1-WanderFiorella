@@ -179,7 +179,7 @@ void *move(void*args){
     thread->success = false;
 
     // Color of the thread
-    // int colorStr = setColor();
+    int colorCode = setColor();
 
 
     // Initial position in the maze
@@ -205,7 +205,7 @@ void *move(void*args){
         i++;
 
         maze[row][column][0] = 0; // Mark the current position as visited
-        // paintMovement(column, row, colorStr); // Paint the movement in the maze
+        paintMovement(column, row, colorCode); // Paint the movement in the maze
 
         verifyAlternativePaths(maze, row, column, MaxRows, MaxCols, direction);
 
@@ -244,7 +244,7 @@ void *move(void*args){
             printf("2 - Row: %d, Column: %d \n", row, column);
             thread->history[i][0] = row;
             thread->history[i][1] = column;
-            // paintMovement(column, row, colorStr); // Paint the movement in the maze
+            paintMovement(column, row, colorCode); // Paint the movement in the maze
 
             verifyAlternativePaths(maze, row, column, MaxRows, MaxCols, NONE);
             
@@ -291,7 +291,6 @@ void createThread(void *args){
 // returns: void
 void start(int maze[MAX_ROWS][MAX_COLS][2], int MaxRows, int MaxCols){
     verifyAlternativePaths(maze, 0, 0, MaxRows, MaxCols, NONE);
-    // move(maze, DOWN, 0, 0, MaxRows, MaxCols);
 }
 
 // Main function
@@ -305,9 +304,9 @@ int main() {
     scanf("%s", filename); // Use %s to read a string
 
     read_maze(filename, maze, &rows, &cols);
-    print_matrix(maze, rows, cols);
-    // paintMaze(maze, cols, rows);
-
+    paintMaze(maze, cols, rows);
+    // print_matrix(maze, rows, cols);
+    
     start(maze, rows, cols);
 
     return 0;

@@ -18,7 +18,7 @@ void deactivateColor(int color){
     colors[color] = 0;
 }
 
-char* setColor()
+int setColor()
 {
     static char colorName[10];
     int colorCode = rand() % 16;
@@ -30,66 +30,57 @@ char* setColor()
 
     activateColor(colorCode);
 
-    if (colorCode == 0) strcpy(colorName, "LGREEN");
-    else if (colorCode == 1) strcpy(colorName, "MGREEN");
-    else if (colorCode == 2) strcpy(colorName, "DGREEN");
-    else if (colorCode == 3) strcpy(colorName, "LRED");
-    else if (colorCode == 4) strcpy(colorName, "DRED");
-    else if (colorCode == 5) strcpy(colorName, "LWHITE");
-    else if (colorCode == 6) strcpy(colorName, "DWHITE");
-    else if (colorCode == 7) strcpy(colorName, "LBLUE");
-    else if (colorCode == 8) strcpy(colorName, "DBLUE");
-    else if (colorCode == 9) strcpy(colorName, "LCYAN");
-    else if (colorCode == 10) strcpy(colorName, "DCYAN");
-    else if (colorCode == 11) strcpy(colorName, "ORANGE");
-    else if (colorCode == 12) strcpy(colorName, "YELLOW");
-    else if (colorCode == 13) strcpy(colorName, "MAGENTA");
-    else if (colorCode == 14) strcpy(colorName, "LEMON");
-    else strcpy(colorName, "PINK");
-
-    return colorName;
+    return colorCode;
 }
 
 void paintMaze(int maze[MAX_ROWS][MAX_COLS][2], int width, int height)
 {
-    int wall = 219;
-    int path = 32; //o 219
-    int exit = 176;
-
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
         {
-            gotoxy(j, i);
+            gotoxy(j+1, i+1);
             if (maze[i][j][0] == 0)
             {
-                printf("%c", wall);
+                printf("\u2588");
             }
             else
             {
                 if (maze[i][j][1] == 1)
                 {
-                    printf("%c", path);
+                    printf("\u2591");
                 }           
                 else{
-                    printf("%c", exit);
+                    printf(" ");
                 } 
             }
         }
     }
 }
 
-void paintMovement(int x, int y, char color[10])
+void paintMovement(int x, int y, int color)
 {
-    int visited = 178; // o 219
+    const char character[4] = "\u2588";
     gotoxy(x, y);
-    printf("\t\t%s%c%s\n",LGREEN,visited,RESET);
-}
 
-int main(){
-    gotoxy(10, 10);
-    printf("Hello, World!\n");
+    switch(color){
+        case 0: printf("\t\t%s%c%s\n",LGREEN,character,RESET); break;
+        case 1: printf("\t\t%s%c%s\n",MGREEN,character,RESET); break;
+        case 2: printf("\t\t%s%c%s\n",DGREEN,character,RESET); break;
+        case 3: printf("\t\t%s%c%s\n",LRED,character,RESET); break;
+        case 4: printf("\t\t%s%c%s\n",DRED,character,RESET); break;
+        case 5: printf("\t\t%s%c%s\n",LWHITE,character,RESET); break;
+        case 6: printf("\t\t%s%c%s\n",DWHITE,character,RESET); break;
+        case 7: printf("\t\t%s%c%s\n",LBLUE,character,RESET); break;
+        case 8: printf("\t\t%s%c%s\n",DBLUE,character,RESET); break;
+        case 9: printf("\t\t%s%c%s\n",LCYAN,character,RESET); break;
+        case 10: printf("\t\t%s%c%s\n",DCYAN,character,RESET); break;
+        case 11: printf("\t\t%s%c%s\n",ORANGE,character,RESET); break;
+        case 12: printf("\t\t%s%c%s\n",YELLOW,character,RESET); break;
+        case 13: printf("\t\t%s%c%s\n",MAGENTA,character,RESET); break;
+        case 14: printf("\t\t%s%c%s\n",LEMON,character,RESET); break;
+        default: printf("\t\t%s%c%s\n",PINK,character,RESET); break;
+    }
 
-    return 0;
 }
 
