@@ -34,6 +34,7 @@ int setColor()
 
 void paintMaze(int maze[MAX_ROWS][MAX_COLS][2], int width, int height)
 {
+    printf("\033[H\033[2J");
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
@@ -60,26 +61,27 @@ void paintMaze(int maze[MAX_ROWS][MAX_COLS][2], int width, int height)
 void paintMovement(int x, int y, int color)
 {
     const char character[4] = "\u2588";
-    gotoxy(x, y);
+    gotoxy(x+1, y+1);
+    //printf("x: %d  y: %d", x,y);
 
     switch(color){
-        case 0: printf("\t\t%s%c%s\n",LGREEN,character,RESET); break;
-        case 1: printf("\t\t%s%c%s\n",MGREEN,character,RESET); break;
-        case 2: printf("\t\t%s%c%s\n",DGREEN,character,RESET); break;
-        case 3: printf("\t\t%s%c%s\n",LRED,character,RESET); break;
-        case 4: printf("\t\t%s%c%s\n",DRED,character,RESET); break;
-        case 5: printf("\t\t%s%c%s\n",LWHITE,character,RESET); break;
-        case 6: printf("\t\t%s%c%s\n",DWHITE,character,RESET); break;
-        case 7: printf("\t\t%s%c%s\n",LBLUE,character,RESET); break;
-        case 8: printf("\t\t%s%c%s\n",DBLUE,character,RESET); break;
-        case 9: printf("\t\t%s%c%s\n",LCYAN,character,RESET); break;
-        case 10: printf("\t\t%s%c%s\n",DCYAN,character,RESET); break;
-        case 11: printf("\t\t%s%c%s\n",ORANGE,character,RESET); break;
-        case 12: printf("\t\t%s%c%s\n",YELLOW,character,RESET); break;
-        case 13: printf("\t\t%s%c%s\n",MAGENTA,character,RESET); break;
-        case 14: printf("\t\t%s%c%s\n",LEMON,character,RESET); break;
-        default: printf("\t\t%s%c%s\n",PINK,character,RESET); break;
+        case 0: printf("%s\u2588%s",LGREEN,RESET); break;
+        case 1: printf("%s\u2588%s",MGREEN,RESET); break;
+        case 2: printf("%s\u2588%s",DGREEN,RESET); break;
+        case 3: printf("%s\u2588%s",LRED,RESET); break;
+        case 4: printf("%s\u2588%s",DRED,RESET); break;
+        case 5: printf("%s\u2588%s",LWHITE,RESET); break;
+        case 6: printf("%s\u2588%s",DWHITE,RESET); break;
+        case 7: printf("%s\u2588%s",LBLUE,RESET); break;
+        case 8: printf("%s\u2588%s",DBLUE,RESET); break;
+        case 9: printf("%s\u2588%s",LCYAN,RESET); break;
+        case 10: printf("%s\u2588%s",DCYAN,RESET); break;
+        case 11: printf("%s\u2588%s",ORANGE,RESET); break;
+        case 12: printf("%s\u2588%s",YELLOW,RESET); break;
+        case 13: printf("%s\u2588%s",MAGENTA,RESET); break;
+        case 14: printf("%s\u2588%s",LEMON,RESET); break;
+        default: printf("%s\u2588%s",PINK,RESET); break;
     }
+    sleep(1);
 
 }
-
