@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include "lib/reader.h"
-#include "lib/RAINBOW/src/C/rainbow.h"
 
 enum Direction {
     UP,

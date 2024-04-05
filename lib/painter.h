@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "reader.h"
+#include "lib/RAINBOW/src/C/rainbow.h"
 
 int colors[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -29,22 +30,22 @@ char* setColor()
 
     activateColor(colorCode);
 
-    if (colorCode == 0) strcopy(colorName, "LGREEN");
-    else if (colorCode == 1) strcopy(colorName, "MGREEN");
-    else if (colorCode == 2) strcopy(colorName, "DGREEN");
-    else if (colorCode == 3) strcopy(colorName, "LRED");
-    else if (colorCode == 4) strcopy(colorName, "DRED");
-    else if (colorCode == 5) strcopy(colorName, "LWHITE");
-    else if (colorCode == 6) strcopy(colorName, "DWHITE");
-    else if (colorCode == 7) strcopy(colorName, "LBLUE");
-    else if (colorCode == 8) strcopy(colorName, "DBLUE");
-    else if (colorCode == 9) strcopy(colorName, "LCYAN");
-    else if (colorCode == 10) strcopy(colorName, "DCYAN");
-    else if (colorCode == 11) strcopy(colorName, "ORANGE");
-    else if (colorCode == 12) strcopy(colorName, "YELLOW");
-    else if (colorCode == 13) strcopy(colorName, "MAGENTA");
-    else if (colorCode == 14) strcopy(colorName, "LEMON");
-    else strcopy(colorName, "PINK");
+    if (colorCode == 0) strcpy(colorName, "LGREEN");
+    else if (colorCode == 1) strcpy(colorName, "MGREEN");
+    else if (colorCode == 2) strcpy(colorName, "DGREEN");
+    else if (colorCode == 3) strcpy(colorName, "LRED");
+    else if (colorCode == 4) strcpy(colorName, "DRED");
+    else if (colorCode == 5) strcpy(colorName, "LWHITE");
+    else if (colorCode == 6) strcpy(colorName, "DWHITE");
+    else if (colorCode == 7) strcpy(colorName, "LBLUE");
+    else if (colorCode == 8) strcpy(colorName, "DBLUE");
+    else if (colorCode == 9) strcpy(colorName, "LCYAN");
+    else if (colorCode == 10) strcpy(colorName, "DCYAN");
+    else if (colorCode == 11) strcpy(colorName, "ORANGE");
+    else if (colorCode == 12) strcpy(colorName, "YELLOW");
+    else if (colorCode == 13) strcpy(colorName, "MAGENTA");
+    else if (colorCode == 14) strcpy(colorName, "LEMON");
+    else strcpy(colorName, "PINK");
 
     return colorName;
 }
@@ -82,8 +83,7 @@ void paintMovement(int x, int y, char color[10])
 {
     int visited = 178; // o 219
     gotoxy(x, y);
-    printf("%s :\t\t%s %c %s\n",color, color, visited,"RESET");
-    // printf("LGREEN:\t\t%sHello World in light green text color%s\n",LGREEN,RESET);
+    printf("\t\t%s%c%s\n",LGREEN,visited,RESET);
 }
 
 int main(){
