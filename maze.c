@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include "lib/reader.h"
-#include "lib/RAINBOW/src/C/rainbow.h"
+#include "lib/painter.h"
 
 
 // Structs
@@ -29,6 +29,11 @@ struct FunctionArgs {
     enum Direction direction;
     int initRow;
     int initCol;
+    int MaxRows;
+    int MaxCols;
+};
+
+struct MainThreadArgs {
     int MaxRows;
     int MaxCols;
 };
@@ -141,18 +146,6 @@ int verifyAlternativePaths(int maze[MAX_ROWS][MAX_COLS][2], int row, int column,
     // en la misma dirección, si es así, no llamar a la función move
     // -----------------------------------------------------------------------------
 
-    if (noPath){
-        //printf("NO PATH\n");
-    }
-    else{
-        // Create args
-        // struct FunctionArgs args = {dir, row+rowOffset, column+colOffset, MaxRows, MaxCols};
-        // Create a thread for the new direction
-        // createThread((void *)&args);
-        // printf("---------------------------------------------------\nNew thread!\n Direction: %d  Row: %d  Column: %d \n---------------------------------------------------\n ", dir, row+rowOffset, column+colOffset);
-        // move(maze, dir, row+rowOffset, column+colOffset, MaxRows, MaxCols);
-        
-    }
 }
 
 
@@ -200,11 +193,11 @@ void *move(void*args){
 
     while(true){
         // Add position to history
+        maze[row][column][0] = 0; // Mark the current position as visited
         thread->history[i][0] = row;
         thread->history[i][1] = column;
         i++;
 
-        maze[row][column][0] = 0; // Mark the current position as visited
         paintMovement(column, row, colorCode); // Paint the movement in the maze
 
         verifyAlternativePaths(maze, row, column, MaxRows, MaxCols, direction);
@@ -242,6 +235,7 @@ void *move(void*args){
         if (wall){
             //print_matrix(maze, MaxRows, MaxCols);
             printf("2 - Row: %d, Column: %d \n", row, column);
+            maze[row][column][0] = 0;
             thread->history[i][0] = row;
             thread->history[i][1] = column;
             paintMovement(column, row, colorCode); // Paint the movement in the maze
@@ -278,18 +272,21 @@ void createThread(void *args){
 
     pthread_t thread;
     pthread_create(&thread, NULL, move, (void *)fargs);
-    pthread_join(thread, &status);
-
-    if (status != 0){
-        printf("Error creating thread\n");
+    // pthread_detach(thread); // Detach the thread to avoid waiting for it
+    if(pthread_detach(thread) != 0){
+        printf("pthread_detach");
     }
+
+    // No need to join the thread here
+
+    // Rest of your code...
 }
 
 
 // Function to start the maze
 // params: maze - the matrix representing the maze
 // returns: void
-void start(int maze[MAX_ROWS][MAX_COLS][2], int MaxRows, int MaxCols){
+void *start(int MaxRows, int MaxCols){
     verifyAlternativePaths(maze, 0, 0, MaxRows, MaxCols, NONE);
 }
 
@@ -307,7 +304,12 @@ int main() {
     paintMaze(maze, cols, rows);
     // print_matrix(maze, rows, cols);
     
-    start(maze, rows, cols);
+    // Main thread
+    struct MainThreadArgs fargs = {rows, cols};
+    pthread_t mainThread;
+    pthread_create(&mainThread, NULL, start, (void *)&fargs); 
+
+    // start(maze, rows, cols);
 
     return 0;
 }

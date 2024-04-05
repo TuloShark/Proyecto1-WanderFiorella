@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "reader.h"
-#include "lib/RAINBOW/src/C/rainbow.h"
+#include "RAINBOW/src/C/rainbow.h"
 
 int colors[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
