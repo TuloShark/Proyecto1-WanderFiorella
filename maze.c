@@ -4,7 +4,10 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include "lib/reader.h"
+#include "lib/RAINBOW/src/C/rainbow.h"
 
+
+// Structs
 enum Direction {
     UP,
     DOWN,
@@ -22,13 +25,22 @@ struct Thread {
     bool success;
 };
 
+struct FunctionArgs {
+    enum Direction direction;
+    int initRow;
+    int initCol;
+    int MaxRows;
+    int MaxCols;
+};
+
 struct ThreadLinkedList {
     struct Thread thread;
     struct ThreadLinkedList *next;
 };
 
 // Global variables
-struct ThreadLinkedList threads[MAX_ROWS*MAX_COLS]; // Array of threads
+struct ThreadLinkedList threads[MAX_ROWS*MAX_COLS]; // Array of threads0
+int maze[MAX_ROWS][MAX_COLS][2]; // Matrix representing the maze
 
 // Function to add a thread to the linked list
 // params: thread - the thread to add
@@ -125,9 +137,13 @@ int verifyAlternativePaths(int maze[MAX_ROWS][MAX_COLS][2], int row, int column,
         //printf("NO PATH\n");
     }
     else{
+        // Create args
+        struct FunctionArgs args = {dir, row+rowOffset, column+colOffset, MaxRows, MaxCols};
         // Create a thread for the new direction
+        createThread((void *)&args);
         // printf("---------------------------------------------------\nNew thread!\n Direction: %d  Row: %d  Column: %d \n---------------------------------------------------\n ", dir, row+rowOffset, column+colOffset);
-        move(maze, dir, row+rowOffset, column+colOffset, MaxRows, MaxCols);
+        // move(maze, dir, row+rowOffset, column+colOffset, MaxRows, MaxCols);
+        
     }
 }
 
@@ -140,11 +156,14 @@ int verifyAlternativePaths(int maze[MAX_ROWS][MAX_COLS][2], int row, int column,
 //         MaxRows - the maximum number of rows in the maze
 //         MaxCols - the maximum number of columns in the maze
 // returns: void
-void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow, int initCol, int MaxRows, int MaxCols){
-    // -------------------------------------------------------------------------------------
-    // Esta es una opción más corta y eficiente en teoría (o esa es la intención jaja) 
-    // La otra opción está comentada abajo
-    // -------------------------------------------------------------------------------------
+void *move(void*args){
+    // Extract arguments
+    struct FunctionArgs *fargs = (struct FunctionArgs *)args;
+    enum Direction direction = fargs->direction;
+    int initRow = fargs->initRow;
+    int initCol = fargs->initCol;
+    int MaxRows = fargs->MaxRows;
+    int MaxCols = fargs->MaxCols;
 
     // Create and initialize thread (struct)
     struct Thread *thread = (struct Thread*)malloc(sizeof(struct Thread));
@@ -152,7 +171,7 @@ void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow
     thread->success = false;
 
     // Color of the thread
-    char *colorStr = setColor();
+    // int colorStr = setColor();
 
 
     // Initial position in the maze
@@ -242,6 +261,15 @@ void move(int maze[MAX_ROWS][MAX_COLS][2], enum Direction direction, int initRow
     //free(thread);
 }
 
+// Function to create a thread
+// params: args
+// returns: void
+void createThread(void *args){
+    struct FunctionArgs *fargs = (struct FunctionArgs *)args;
+    pthread_t threadId;
+    pthread_create(&threadId, NULL, move, (void *)fargs);
+}
+
 
 // Function to start the maze
 // params: maze - the matrix representing the maze
@@ -254,7 +282,7 @@ void start(int maze[MAX_ROWS][MAX_COLS][2], int MaxRows, int MaxCols){
 // Main function
 int main() {
 
-    int maze[MAX_ROWS][MAX_COLS][2];
+    // int maze[MAX_ROWS][MAX_COLS][2];
     int rows, cols;
 
     char filename[100]; // Allocate memory for the filename
