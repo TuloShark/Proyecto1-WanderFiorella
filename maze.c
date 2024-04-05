@@ -141,14 +141,14 @@ int verifyAlternativePaths(int row, int column, int MaxRows, int MaxCols, enum D
 // returns: void
 void *move(void*args){
     //printf("move\n");
-    // Extract arguments
+    // Extract aguments
     struct FunctionArgs *fargs = (struct FunctionArgs *)args;
     enum Direction direction = fargs->direction;
     int initRow = fargs->initRow;
     int initCol = fargs->initCol;
     int MaxRows = fargs->MaxRows;
     int MaxCols = fargs->MaxCols;
-     //printf("Params %d %d %d %d %d\n", direction, initRow, initCol, MaxRows, MaxCols);
+    /// printf("Params %d %d %d %d %d\n", direction, initRow, initCol, MaxRows, MaxCols);
     //printf("move 2\n");
 
     // Create and initialize thread (struct)
@@ -219,7 +219,7 @@ void *move(void*args){
             }
         }
 
-        // printf("Wall: %d\n", wall);
+         //printf("Wall: %d\n", wall);
 
 
         //printf("5\n");
@@ -262,12 +262,14 @@ void *move(void*args){
 void createThread(struct FunctionArgs args){
     //printf("Params %d %d %d %d %d\n", args.direction, args.initRow, args.initCol, args.MaxRows, args.MaxCols);
     //struct FunctionArgs *fargs = (struct FunctionArgs *)args;
+    struct FunctionArgs *fargs = malloc(sizeof(struct FunctionArgs));;
+    *fargs = args;
     //printf("Params %d %d %d %d %d\n", fargs->direction, fargs->initRow, fargs->initCol, fargs->MaxRows, fargs->MaxCols);
     int status;
 
     pthread_t thread;
-    pthread_create(&thread, NULL, move, (void *)&args);
-    pthread_join(thread,NULL);
+    pthread_create(&thread, NULL, move, (void *)fargs);
+    //pthread_join(thread,NULL);
     //pthread_detach(thread);
     //printf("Params2 %d %d %d %d %d\n", args.direction, args.initRow, args.initCol, args.MaxRows, args.MaxCols);
 }
@@ -312,10 +314,14 @@ int main() {
     struct MainThreadArgs fargs = {rows, cols};
     pthread_t mainThread;
     pthread_create(&mainThread, NULL, start, (void *)&fargs); 
-    pthread_join(mainThread,NULL);
-    pthread_exit(NULL);
+    //pthread_join(mainThread,NULL);
+    //pthread_exit(NULL);
 
     // start(rows, cols);
+    
+    while(true){
+        
+    }
 
     return 0;
 }
