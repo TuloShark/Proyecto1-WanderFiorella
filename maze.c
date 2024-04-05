@@ -101,27 +101,35 @@ int verifyAlternativePaths(int maze[MAX_ROWS][MAX_COLS][2], int row, int column,
         dir = DOWN;
         noPath = false;
         rowOffset = 1;
+        struct FunctionArgs args = {dir, row+rowOffset, column+colOffset, MaxRows, MaxCols};
+        createThread((void *)&args);
         //printf("DOWN\n");
     }
     if (currentDirection != UP && !verifyBoundaries(row-1, column, MaxRows, MaxCols) && maze[row-1][column][0] == 1){
        dir = UP;
         noPath = false;
         rowOffset = -1;
+        struct FunctionArgs args = {dir, row+rowOffset, column+colOffset, MaxRows, MaxCols};
+        createThread((void *)&args);
        //printf("UP\n");
     }
     if (currentDirection != RIGHT && !verifyBoundaries(row, column+1, MaxRows, MaxCols) && maze[row][column+1][0] == 1){
         dir = RIGHT;
         noPath = false;
         colOffset = 1;
+        struct FunctionArgs args = {dir, row+rowOffset, column+colOffset, MaxRows, MaxCols};
+        createThread((void *)&args);
         //printf("RIGHT\n");
     }
     if (currentDirection != LEFT && !verifyBoundaries(row, column-1, MaxRows, MaxCols) && maze[row][column-1][0] == 1){
         dir = LEFT;
         noPath = false;
         colOffset = -1;
+        struct FunctionArgs args = {dir, row+rowOffset, column+colOffset, MaxRows, MaxCols};
+        createThread((void *)&args);
         //printf("LEFT\n");
     }
-    if (currentDirection == NONE && row == 0 && column == 0){
+    if (currentDirection == NONE && row == 0 && column == 0){ // First thread to start the maze
         rowOffset = 0;
         colOffset = 0;
     }
@@ -138,9 +146,9 @@ int verifyAlternativePaths(int maze[MAX_ROWS][MAX_COLS][2], int row, int column,
     }
     else{
         // Create args
-        struct FunctionArgs args = {dir, row+rowOffset, column+colOffset, MaxRows, MaxCols};
+        // struct FunctionArgs args = {dir, row+rowOffset, column+colOffset, MaxRows, MaxCols};
         // Create a thread for the new direction
-        createThread((void *)&args);
+        // createThread((void *)&args);
         // printf("---------------------------------------------------\nNew thread!\n Direction: %d  Row: %d  Column: %d \n---------------------------------------------------\n ", dir, row+rowOffset, column+colOffset);
         // move(maze, dir, row+rowOffset, column+colOffset, MaxRows, MaxCols);
         
@@ -266,8 +274,15 @@ void *move(void*args){
 // returns: void
 void createThread(void *args){
     struct FunctionArgs *fargs = (struct FunctionArgs *)args;
-    pthread_t threadId;
-    pthread_create(&threadId, NULL, move, (void *)fargs);
+    int status;
+
+    pthread_t thread;
+    pthread_create(&thread, NULL, move, (void *)fargs);
+    pthread_join(thread, &status);
+
+    if (status != 0){
+        printf("Error creating thread\n");
+    }
 }
 
 
