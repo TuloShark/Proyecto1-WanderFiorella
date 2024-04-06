@@ -6,7 +6,6 @@
 #include "lib/reader.h"
 #include "lib/painter.h"
 
-
 // Structs
 enum Direction {
     UP,
@@ -38,32 +37,8 @@ struct MainThreadArgs {
     int MaxCols;
 };
 
-struct ThreadLinkedList {
-    struct Thread thread;
-    struct ThreadLinkedList *next;
-};
-
 // Global variables
-struct ThreadLinkedList threads[MAX_ROWS*MAX_COLS]; // Array of threads0
 int maze[MAX_ROWS][MAX_COLS][2]; // Matrix representing the maze
-    // Mutex
-pthread_mutex_t mp = PTHREAD_MUTEX_INITIALIZER;
-
-
-// Function to add a thread to the linked list
-// params: thread - the thread to add
-// returns: void
-void addThread(struct Thread thread){
-    struct ThreadLinkedList *newThread = (struct ThreadLinkedList*)malloc(sizeof(struct ThreadLinkedList));
-    newThread->thread = thread;
-    newThread->next = NULL;
-
-    struct ThreadLinkedList *current = threads;
-    while(current->next != NULL){
-        current = current->next;
-    }
-    current->next = newThread;
-}
 
 // Function to verify if the position is out of boundaries
 // params: row - the row of the position
@@ -96,7 +71,7 @@ bool verifyWall(int maze[MAX_ROWS][MAX_COLS][2], int row, int column, int MaxRow
 //         MaxCols - the maximum number of columns in the maze
 // returns: void
 int verifyAlternativePaths(int row, int column, int MaxRows, int MaxCols, enum Direction currentDirection){
-    //printf("verify paths\n");
+    // printf("verify paths\n");
     // print_matrix(maze, MaxRows, MaxCols);
     int dirOffsets[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
     enum Direction directions[4] = {UP, DOWN, LEFT, RIGHT};
@@ -106,9 +81,9 @@ int verifyAlternativePaths(int row, int column, int MaxRows, int MaxCols, enum D
         
         int newRow = row + dirOffsets[i][0];
         int newCol = column + dirOffsets[i][1];  
-        //printf("Row: %d, Column: %d\n", newRow, newCol);
-        //printf("Boundaries: %d\n", verifyBoundaries(newRow, newCol, MaxRows, MaxCols));
-        //printf("Wall: %d\n", verifyWall(maze, newRow, newCol, MaxRows, MaxCols));
+        // printf("Row: %d, Column: %d\n", newRow, newCol);
+        // printf("Boundaries: %d\n", verifyBoundaries(newRow, newCol, MaxRows, MaxCols));
+        printf("\n");
         
         if (!verifyBoundaries(newRow, newCol, MaxRows, MaxCols) && !verifyWall(maze, newRow, newCol, MaxRows, MaxCols)) {
             // row = newRow;
@@ -183,14 +158,9 @@ void *move(void*args){
     while(true){
         //printf("1\n");
 
-        // Lock mutex
-        pthread_mutex_lock(&mp);
 
         // Add position to history
         maze[row][column][0] = 0; // Mark the current position as visited
-
-        // Unlock mutex
-        pthread_mutex_unlock(&mp);
 
         thread->history[i][0] = row;
         thread->history[i][1] = column;
@@ -208,7 +178,7 @@ void *move(void*args){
         success = maze[row][column][1] == 1;
         // If the current position is the exit, break the loop
         if (success){
-            //printf("SUCCESS!!! YOU FOUND IT!!!\n");
+            printf("Has encontrado la salida\n");
             thread->success = true;
             break;
         }
@@ -230,7 +200,7 @@ void *move(void*args){
             }
         }
 
-         //printf("Wall: %d\n", wall);
+        //printf("Wall: %d\n", wall);
 
 
         //printf("5\n");
@@ -239,13 +209,7 @@ void *move(void*args){
             //print_matrix(maze, MaxRows, MaxCols);
             // printf("2 - Row: %d, Column: %d \n", row, column);
 
-            // Lock mutex
-            pthread_mutex_lock(&mp);
-
             maze[row][column][0] = 0;
-
-            // Unlock mutex
-            pthread_mutex_unlock(&mp);
 
             thread->history[i][0] = row;
             thread->history[i][1] = column;
@@ -302,7 +266,7 @@ void *start(void *args){
     int MaxRows = fargs->MaxRows;
     int MaxCols = fargs->MaxCols;
 
-    printf("start rows> %d  cols> %d\n", MaxRows, MaxCols);
+    //printf("start rows> %d  cols> %d\n", MaxRows, MaxCols);
     maze[0][0][0] = 0; // Mark the initial position as visited
     verifyAlternativePaths(0, 0, MaxRows, MaxCols, NONE);
     // Wait for all threads to finish
@@ -311,7 +275,7 @@ void *start(void *args){
     //getchar(); // Esperar a que se presione Enter
     
     // move((void *)&(struct FunctionArgs){DOWN, 0, 0, MaxRows, MaxCols});
-    printf("end\n");
+    //printf("end\n");
 }
 
 // Main function
@@ -328,22 +292,16 @@ int main() {
     paintMaze(maze, cols, rows);
     //  print_matrix(maze, rows, cols);
     
-    printf("Creando main thread\n");
+    //printf("Creando main thread\n");
     // Main thread
     struct MainThreadArgs fargs = {rows, cols};
     pthread_t mainThread;
     pthread_create(&mainThread, NULL, start, (void *)&fargs); 
     //pthread_join(mainThread,NULL);    //pthread_exit(NULL);
 
-    // Initialize mutex
-    int ret;
-    ret = pthread_mutex_init(&mp, NULL);
-
     // start(rows, cols);
     
     while(true){
-        
     }
-
     return 0;
 }
