@@ -3,6 +3,8 @@
 #include <string.h>
 #include "RAINBOW/src/C/rainbow.h"
 
+int threadCount = 0;
+
 int colors[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 void gotoxy(int x, int y) {
@@ -84,5 +86,33 @@ void paintMovement(int x, int y, int color)
     }
     sleep(1);
     gotoxy(20,20);
-
+}
+void paintThreadInfo(int history[MAX_ROWS*MAX_COLS][2], int y, int positionsQuantity, bool success, int color)
+{
+    threadCount++;
+    gotoxy(1, y+2+threadCount);
+    switch(color){
+        case 0: printf("%sThread%s",LGREEN,RESET); break;
+        case 1: printf("%sThread%s",MGREEN,RESET); break;
+        case 2: printf("%sThread%s",DGREEN,RESET); break;
+        case 3: printf("%sThread%s",LRED,RESET); break;
+        case 4: printf("%sThread%s",DRED,RESET); break;
+        case 5: printf("%sThread%s",LWHITE,RESET); break;
+        case 6: printf("%sThread%s",DWHITE,RESET); break;
+        case 7: printf("%sThread%s",LBLUE,RESET); break;
+        case 8: printf("%sThread%s",DBLUE,RESET); break;
+        case 9: printf("%sThread%s",LCYAN,RESET); break;
+        case 10: printf("%sThread%s",DCYAN,RESET); break;
+        case 11: printf("%sThread%s",ORANGE,RESET); break;
+        case 12: printf("%sThread%s",YELLOW,RESET); break;
+        case 13: printf("%sThread%s",MAGENTA,RESET); break;
+        case 14: printf("%sThread%s",LEMON,RESET); break;
+        default: printf("%sThread%s",PINK,RESET); break;
+    }
+    printf(" %d is a %s and went throught the positions ", y, success ? "success" : "failure");
+    for (int i = 0; i < positionsQuantity; i++)
+    {
+        printf("(%d, %d) ", history[i][0], history[i][1]);
+    }
+    
 }
