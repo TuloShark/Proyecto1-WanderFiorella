@@ -90,13 +90,8 @@ int verifyAlternativePaths(int row, int column, int MaxRows, int MaxCols, enum D
         printf("\n");
         
         if (!verifyBoundaries(newRow, newCol, MaxRows, MaxCols) && !verifyWall(maze, newRow, newCol, MaxRows, MaxCols)) {
-            // row = newRow;
-            // column = newCol;
-            
             
             struct FunctionArgs args = {directions[i], newRow, newCol, MaxRows, MaxCols};
-            //printf("Params %d %d %d %d %d\n", args.direction, args.initRow, args.initCol, args.MaxRows, args.MaxCols);
-            //printf("creando thread en direccion %d\n",directions[i]);
             createThread(args);
 
             if (currentDirection == NONE) break;
@@ -121,49 +116,52 @@ int verifyAlternativePaths(int row, int column, int MaxRows, int MaxCols, enum D
 //         MaxRows - the maximum number of rows in the maze
 //         MaxCols - the maximum number of columns in the maze
 // returns: void
+
 void *move(void*args){
-    //printf("move\n");
+
     // Extract aguments
+
     struct FunctionArgs *fargs = (struct FunctionArgs *)args;
     enum Direction direction = fargs->direction;
     int initRow = fargs->initRow;
     int initCol = fargs->initCol;
     int MaxRows = fargs->MaxRows;
     int MaxCols = fargs->MaxCols;
-    /// printf("Params %d %d %d %d %d\n", direction, initRow, initCol, MaxRows, MaxCols);
-    //printf("move 2\n");
 
     // Create and initialize thread (struct)
+
     struct Thread *thread = (struct Thread*)malloc(sizeof(struct Thread));
     thread->direction = direction;
     thread->success = false;
-    //printf("move 3\n");
   
     // Color of the thread
+
     int colorCode = setColor();
 
-    //printf("move 4\n");
     // Initial position in the maze
+
     int row = initRow;
     int column = initCol;
     
     // Index for the positions array
+
     int i = 0;
 
     // Flags
+
     bool wall = false;
     bool success = false;
 
     // Offset for the direction
+
     int offset;
     if (direction == DOWN || direction == RIGHT) offset = 1;
     if (direction == UP || direction == LEFT) offset = -1;
 
     while(true){
-        //printf("1\n");
-
 
         // Add position to history
+
         maze[row][column][0] = 0; // Mark the current position as visited
 
         thread->history[i][0] = row;
@@ -172,22 +170,19 @@ void *move(void*args){
 
         paintMovement(column, row, colorCode); // Paint the movement in the maze
 
-        //printf("2\n");
         verifyAlternativePaths(row, column, MaxRows, MaxCols, direction);
 
-         //printf("Row: %d, Column: %d Direction: %d", row, column, direction);
-
-        //printf("3\n");
         // Check if the current position is the exit
+
         success = maze[row][column][1] == 1;
+
         // If the current position is the exit, break the loop
+
         if (success){
             thread->success = true;
             break;
         }
-        
 
-        //printf("4\n");
         if (direction == DOWN || direction == UP){
             wall = verifyWall(maze, row+offset, column, MaxRows, MaxCols); // Verify if there is a wall in the next position
             
@@ -203,14 +198,9 @@ void *move(void*args){
             }
         }
 
-        //printf("Wall: %d\n", wall);
-
-
-        //printf("5\n");
         // If there is a wall, explote alternative paths and destroy the thread
+
         if (wall){
-            //print_matrix(maze, MaxRows, MaxCols);
-            // printf("2 - Row: %d, Column: %d \n", row, column);
 
             maze[row][column][0] = 0;
 
@@ -221,7 +211,6 @@ void *move(void*args){
             verifyAlternativePaths(row, column, MaxRows, MaxCols, NONE);
             
             deactivateColor(colorCode);
-            // terminar hilo
             break;
         }
 
@@ -230,7 +219,6 @@ void *move(void*args){
     paintThreadInfo(thread->history, MaxRows, i, thread->success, colorCode); // Print thread info
     for (int j = 0; j < i; j++){
         
-        //printf("[%d, %d] ", thread->history[j][0], thread->history[j][1]);
     }
     free(thread);
 }
@@ -238,15 +226,12 @@ void *move(void*args){
 // Function to create a thread
 // params: args
 // returns: void
+
 void createThread(struct FunctionArgs args){
-    
-    //printf("Params %d %d %d %d %d\n", args.direction, args.initRow, args.initCol, args.MaxRows, args.MaxCols);
 
     struct FunctionArgs *fargs = malloc(sizeof(struct FunctionArgs));;
     *fargs = args;
-    
-    //printf("Params %d %d %d %d %d\n", fargs->direction, fargs->initRow, fargs->initCol, fargs->MaxRows, fargs->MaxCols);
-    
+
     int status;
 
     pthread_t thread;
@@ -257,6 +242,7 @@ void createThread(struct FunctionArgs args){
 // Function to start the maze
 // params: maze - the matrix representing the maze
 // returns: void
+
 void *start(void *args){
     struct MainThreadArgs *fargs = (struct MainThreadArgs *)args;
     int MaxRows = fargs->MaxRows;
@@ -268,6 +254,7 @@ void *start(void *args){
 }
 
 // Main function
+
 int main() {
     int rows, cols;
 
@@ -279,6 +266,7 @@ int main() {
     paintMaze(maze, cols, rows);
     
     // Main thread
+    
     struct MainThreadArgs fargs = {rows, cols};
     pthread_t mainThread;
     pthread_create(&mainThread, NULL, start, (void *)&fargs);
