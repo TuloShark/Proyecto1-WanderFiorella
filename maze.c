@@ -46,6 +46,9 @@ struct ThreadLinkedList {
 // Global variables
 struct ThreadLinkedList threads[MAX_ROWS*MAX_COLS]; // Array of threads0
 int maze[MAX_ROWS][MAX_COLS][2]; // Matrix representing the maze
+    // Mutex
+pthread_mutex_t mp = PTHREAD_MUTEX_INITIALIZER;
+
 
 // Function to add a thread to the linked list
 // params: thread - the thread to add
@@ -179,13 +182,21 @@ void *move(void*args){
 
     while(true){
         //printf("1\n");
+
+        // Lock mutex
+        pthread_mutex_lock(&mp);
+
         // Add position to history
         maze[row][column][0] = 0; // Mark the current position as visited
+
+        // Unlock mutex
+        pthread_mutex_unlock(&mp);
+
         thread->history[i][0] = row;
         thread->history[i][1] = column;
         i++;
 
-         paintMovement(column, row, colorCode); // Paint the movement in the maze
+        paintMovement(column, row, colorCode); // Paint the movement in the maze
 
         //printf("2\n");
         verifyAlternativePaths(row, column, MaxRows, MaxCols, direction);
@@ -227,10 +238,18 @@ void *move(void*args){
         if (wall){
             //print_matrix(maze, MaxRows, MaxCols);
             // printf("2 - Row: %d, Column: %d \n", row, column);
+
+            // Lock mutex
+            pthread_mutex_lock(&mp);
+
             maze[row][column][0] = 0;
+
+            // Unlock mutex
+            pthread_mutex_unlock(&mp);
+
             thread->history[i][0] = row;
             thread->history[i][1] = column;
-             paintMovement(column, row, colorCode); // Paint the movement in the maze
+            paintMovement(column, row, colorCode); // Paint the movement in the maze
 
             verifyAlternativePaths(row, column, MaxRows, MaxCols, NONE);
             
@@ -314,8 +333,11 @@ int main() {
     struct MainThreadArgs fargs = {rows, cols};
     pthread_t mainThread;
     pthread_create(&mainThread, NULL, start, (void *)&fargs); 
-    //pthread_join(mainThread,NULL);
-    //pthread_exit(NULL);
+    //pthread_join(mainThread,NULL);    //pthread_exit(NULL);
+
+    // Initialize mutex
+    int ret;
+    ret = pthread_mutex_init(&mp, NULL);
 
     // start(rows, cols);
     

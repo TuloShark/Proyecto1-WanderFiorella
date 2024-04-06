@@ -83,5 +83,6 @@ void paintMovement(int x, int y, int color)
         default: printf("%s\u2588%s",PINK,RESET); break;
     }
     sleep(1);
+    gotoxy(20,20);
 
 }
