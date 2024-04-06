@@ -7,6 +7,7 @@
 #include "lib/painter.h"
 
 // Structs
+
 enum Direction {
     UP,
     DOWN,
@@ -266,7 +267,7 @@ int main() {
     paintMaze(maze, cols, rows);
     
     // Main thread
-    
+
     struct MainThreadArgs fargs = {rows, cols};
     pthread_t mainThread;
     pthread_create(&mainThread, NULL, start, (void *)&fargs);
