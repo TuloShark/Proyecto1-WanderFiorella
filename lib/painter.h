@@ -3,21 +3,38 @@
 #include <string.h>
 #include "RAINBOW/src/C/rainbow.h"
 
+// Global variables
 int threadCount = 0;
-
 int colors[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+// Function to move the cursor to a specific position
+// params: x - the x coordinate of the position
+//         y - the y coordinate of the position
+// returns: void
 
 void gotoxy(int x, int y) {
     printf("\033[%d;%dH", y, x);
 }
 
+// Function to activate a color
+// params: color - the color to be activated
+// returns: void
+
 void activateColor(int color){
     colors[color] = 1;
 }
 
+// Function to deactivate a color
+// params: color - the color to be deactivated
+// returns: void
+
 void deactivateColor(int color){
     colors[color] = 0;
 }
+
+// Function to set a color
+// params: none
+// returns: the color code
 
 int setColor()
 {
@@ -33,6 +50,12 @@ int setColor()
 
     return colorCode;
 }
+
+// Function to paint the maze
+// params: maze - the matrix representing the maze
+//         width - the width of the maze
+//         height - the height of the maze
+// returns: void
 
 void paintMaze(int maze[MAX_ROWS][MAX_COLS][2], int width, int height)
 {
@@ -59,6 +82,12 @@ void paintMaze(int maze[MAX_ROWS][MAX_COLS][2], int width, int height)
         }
     }
 }
+
+// Function to paint the movement of a thread
+// params: x - the x coordinate of the movement
+//         y - the y coordinate of the movement
+//         color - the color of the movement
+// returns: void
 
 void paintMovement(int x, int y, int color)
 {
@@ -87,6 +116,15 @@ void paintMovement(int x, int y, int color)
     sleep(1);
     gotoxy(20,20);
 }
+
+// Function to paint the thread info
+// params: history - the history of the thread
+//         y - the y coordinate of the thread
+//         positionsQuantity - the quantity of positions in the history
+//         success - the success of the thread
+//         color - the color of the thread
+// returns: void
+
 void paintThreadInfo(int history[MAX_ROWS*MAX_COLS][2], int y, int positionsQuantity, bool success, int color)
 {
     threadCount++;
@@ -109,7 +147,7 @@ void paintThreadInfo(int history[MAX_ROWS*MAX_COLS][2], int y, int positionsQuan
         case 14: printf("%sThread%s",LEMON,RESET); break;
         default: printf("%sThread%s",PINK,RESET); break;
     }
-    printf(" %d is a %s and went throught the positions ", y, success ? "success" : "failure");
+    printf(" is a %s and went throught the positions ", success ? "success" : "failure");
     for (int i = 0; i < positionsQuantity; i++)
     {
         printf("(%d, %d) ", history[i][0], history[i][1]);

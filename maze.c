@@ -180,6 +180,7 @@ void *move(void*args){
         // If the current position is the exit, break the loop
 
         if (success){
+            maze[row][column][0] = 1; // Unmark the current position as visited so other threads can visit it too
             thread->success = true;
             break;
         }
@@ -211,7 +212,6 @@ void *move(void*args){
 
             verifyAlternativePaths(row, column, MaxRows, MaxCols, NONE);
             
-            deactivateColor(colorCode);
             break;
         }
 
@@ -221,6 +221,8 @@ void *move(void*args){
     for (int j = 0; j < i; j++){
         
     }
+    deactivateColor(colorCode);
+
     free(thread);
 }
 
