@@ -4,8 +4,9 @@
 #include "RAINBOW/src/C/rainbow.h"
 
 // Global variables
+int colorsQuantity = 14;
 int threadCount = 0;
-int colors[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int colors[colorsQuantity] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 // Function to move the cursor to a specific position
 // params: x - the x coordinate of the position
@@ -38,12 +39,11 @@ void deactivateColor(int color){
 
 int setColor()
 {
-    static char colorName[10];
-    int colorCode = rand() % 16;
+    int colorCode = rand() % colorsQuantity;
 
     while (colors[colorCode] == 1)
     {
-        colorCode = rand() % 16;
+        colorCode = rand() % colorsQuantity;
     }
 
     activateColor(colorCode);
@@ -97,20 +97,18 @@ void paintMovement(int x, int y, int color)
 
     switch(color){
         case 0: printf("%s\u2588%s",LGREEN,RESET); break;
-        case 1: printf("%s\u2588%s",MGREEN,RESET); break;
-        case 2: printf("%s\u2588%s",DGREEN,RESET); break;
-        case 3: printf("%s\u2588%s",LRED,RESET); break;
-        case 4: printf("%s\u2588%s",DRED,RESET); break;
-        case 5: printf("%s\u2588%s",LWHITE,RESET); break;
-        case 6: printf("%s\u2588%s",DWHITE,RESET); break;
-        case 7: printf("%s\u2588%s",LBLUE,RESET); break;
-        case 8: printf("%s\u2588%s",DBLUE,RESET); break;
-        case 9: printf("%s\u2588%s",LCYAN,RESET); break;
-        case 10: printf("%s\u2588%s",DCYAN,RESET); break;
-        case 11: printf("%s\u2588%s",ORANGE,RESET); break;
-        case 12: printf("%s\u2588%s",YELLOW,RESET); break;
-        case 13: printf("%s\u2588%s",MAGENTA,RESET); break;
-        case 14: printf("%s\u2588%s",LEMON,RESET); break;
+        case 1: printf("%s\u2588%s",DGREEN,RESET); break;
+        case 2: printf("%s\u2588%s",LRED,RESET); break;
+        case 3: printf("%s\u2588%s",DRED,RESET); break;
+        case 4: printf("%s\u2588%s",LWHITE,RESET); break;
+        case 5: printf("%s\u2588%s",LBLUE,RESET); break;
+        case 6: printf("%s\u2588%s",DBLUE,RESET); break;
+        case 7: printf("%s\u2588%s",LCYAN,RESET); break;
+        case 8: printf("%s\u2588%s",DCYAN,RESET); break;
+        case 9: printf("%s\u2588%s",ORANGE,RESET); break;
+        case 10: printf("%s\u2588%s",YELLOW,RESET); break;
+        case 11: printf("%s\u2588%s",MAGENTA,RESET); break;
+        case 12: printf("%s\u2588%s",LEMON,RESET); break;
         default: printf("%s\u2588%s",PINK,RESET); break;
     }
     sleep(1);
@@ -131,20 +129,18 @@ void paintThreadInfo(int history[MAX_ROWS*MAX_COLS][2], int y, int positionsQuan
     gotoxy(1, y+2+threadCount);
     switch(color){
         case 0: printf("%sThread%s",LGREEN,RESET); break;
-        case 1: printf("%sThread%s",MGREEN,RESET); break;
-        case 2: printf("%sThread%s",DGREEN,RESET); break;
-        case 3: printf("%sThread%s",LRED,RESET); break;
-        case 4: printf("%sThread%s",DRED,RESET); break;
-        case 5: printf("%sThread%s",LWHITE,RESET); break;
-        case 6: printf("%sThread%s",DWHITE,RESET); break;
-        case 7: printf("%sThread%s",LBLUE,RESET); break;
-        case 8: printf("%sThread%s",DBLUE,RESET); break;
-        case 9: printf("%sThread%s",LCYAN,RESET); break;
-        case 10: printf("%sThread%s",DCYAN,RESET); break;
-        case 11: printf("%sThread%s",ORANGE,RESET); break;
-        case 12: printf("%sThread%s",YELLOW,RESET); break;
-        case 13: printf("%sThread%s",MAGENTA,RESET); break;
-        case 14: printf("%sThread%s",LEMON,RESET); break;
+        case 1: printf("%sThread%s",DGREEN,RESET); break;
+        case 2: printf("%sThread%s",LRED,RESET); break;
+        case 3: printf("%sThread%s",DRED,RESET); break;
+        case 4: printf("%sThread%s",LWHITE,RESET); break;
+        case 5: printf("%sThread%s",LBLUE,RESET); break;
+        case 6: printf("%sThread%s",DBLUE,RESET); break;
+        case 7: printf("%sThread%s",LCYAN,RESET); break;
+        case 8: printf("%sThread%s",DCYAN,RESET); break;
+        case 9: printf("%sThread%s",ORANGE,RESET); break;
+        case 10: printf("%sThread%s",YELLOW,RESET); break;
+        case 11: printf("%sThread%s",MAGENTA,RESET); break;
+        case 12: printf("%sThread%s",LEMON,RESET); break;
         default: printf("%sThread%s",PINK,RESET); break;
     }
     printf(" is a %s and went throught the positions ", success ? "success" : "failure");
