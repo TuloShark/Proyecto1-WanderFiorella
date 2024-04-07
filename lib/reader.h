@@ -11,12 +11,21 @@
 //         rows - the number of rows in the maze
 //         cols - the number of columns in the maze
 // returns: void
+
 void read_maze(char *filename, int maze[MAX_ROWS][MAX_COLS][2], int *rows, int *cols) {
 
     // Open the file
     FILE *file = fopen(filename, "r");
+
+    // Check if the file was opened successfully
     if (file == NULL) {
         perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    // Check if file is empty
+    if (fgetc(file) == EOF) {
+        perror("Error: empty file");
         exit(EXIT_FAILURE);
     }
 
@@ -28,6 +37,7 @@ void read_maze(char *filename, int maze[MAX_ROWS][MAX_COLS][2], int *rows, int *
         if (*cols == 0) {
             *cols = (int) strlen(line) - 1; // -1 to remove the newline character
         }
+
         for (int i = 0; i < *cols; i++) { // Iterate over the characters in the line
             if (line[i] == '*') { 
                 maze[*rows][i][0] = 0;
@@ -36,14 +46,22 @@ void read_maze(char *filename, int maze[MAX_ROWS][MAX_COLS][2], int *rows, int *
             } else if (line[i] == '/') {
                 maze[*rows][i][0] = 1;
                 maze[*rows][i][1] = 1;
-            } else {
+            } else if (line[i] == ' ') {
                 maze[*rows][i][0] = 1;
                 maze[*rows][i][1] = 0;
+            } else {
+                perror("Error: invalid format of maze");
+                exit(EXIT_FAILURE);
             }
+
         }
         (*rows)++;
     }
     fclose(file);
+
+    // Check structure of the maze matrix [ [ (), (), () ] , [ (), (), () ] , [ (), (), () ] ]
+
+    
 }
 
 // Function to print the maze matrix
@@ -51,6 +69,7 @@ void read_maze(char *filename, int maze[MAX_ROWS][MAX_COLS][2], int *rows, int *
 //         rows - the number of rows in the matrix
 //         cols - the number of columns in the matrix
 // returns: void
+
 void print_matrix(int maze[MAX_ROWS][MAX_COLS][2], int rows, int cols) {
     printf("Representacion de la matriz:\n");
     for (int i = 0; i < rows; i++) {
