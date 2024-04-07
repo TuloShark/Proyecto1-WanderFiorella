@@ -19,18 +19,20 @@ void read_maze(char *filename, int maze[MAX_ROWS][MAX_COLS][2], int *rows, int *
 
     // Check if the file was opened successfully
     if (file == NULL) {
-        perror("Error opening file");
-        exit(EXIT_FAILURE);
+        perror("Error abriendo archivo");
+        exit(1);
     }
 
     // Check if file is empty
     if (fgetc(file) == EOF) {
-        perror("Error: empty file");
-        exit(EXIT_FAILURE);
+        printf("Error: archivo vacio\n");
+        exit(1);
     }
 
     *rows = 0;
     *cols = 0;
+    bool empty = true;
+
     char line[MAX_COLS];
     while (fgets(line, MAX_COLS, file) != NULL) { // Read a line from the file
         
@@ -42,7 +44,7 @@ void read_maze(char *filename, int maze[MAX_ROWS][MAX_COLS][2], int *rows, int *
             if (line[i] == '*') { 
                 maze[*rows][i][0] = 0;
                 maze[*rows][i][1] = 0;
-                
+                empty = false;
             } else if (line[i] == '/') {
                 maze[*rows][i][0] = 1;
                 maze[*rows][i][1] = 1;
@@ -50,8 +52,8 @@ void read_maze(char *filename, int maze[MAX_ROWS][MAX_COLS][2], int *rows, int *
                 maze[*rows][i][0] = 1;
                 maze[*rows][i][1] = 0;
             } else {
-                perror("Error: invalid format of maze");
-                exit(EXIT_FAILURE);
+                printf("Error: formato invalido\n");
+                exit(1);
             }
 
         }
@@ -59,9 +61,11 @@ void read_maze(char *filename, int maze[MAX_ROWS][MAX_COLS][2], int *rows, int *
     }
     fclose(file);
 
-    // Check structure of the maze matrix [ [ (), (), () ] , [ (), (), () ] , [ (), (), () ] ]
-
-    
+    // Check matrix is not full or block by walls or empty
+    if ((maze[1][0][0] == 0 && maze[0][1][0] == 0) || empty) {
+        printf("Error: matriz no valida\n");
+        exit(1);
+    }
 }
 
 // Function to print the maze matrix
