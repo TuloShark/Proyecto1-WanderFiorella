@@ -39,7 +39,11 @@ struct MainThreadArgs {
 };
 
 // Global variables
-
+pthread_mutex_t mazeLock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+bool threadActive = false;
+int activeThreads = 0;
 int maze[MAX_ROWS][MAX_COLS][2]; // Matrix representing the maze
 
 // Function to verify if the position is out of boundaries
@@ -162,15 +166,16 @@ void *move(void*args){
     while(true){
 
         // Add position to history
-
+        pthread_mutex_lock(&mazeLock);
         maze[row][column][0] = 0; // Mark the current position as visited
+        pthread_mutex_unlock(&mazeLock);
 
         thread->history[i][0] = row;
         thread->history[i][1] = column;
         i++;
 
         paintMovement(column, row, colorCode); // Paint the movement in the maze
-
+        
         verifyAlternativePaths(row, column, MaxRows, MaxCols, direction);
 
         // Check if the current position is the exit
@@ -203,13 +208,15 @@ void *move(void*args){
         // If there is a wall, explote alternative paths and destroy the thread
 
         if (wall){
-
+            pthread_mutex_lock(&mazeLock);
             maze[row][column][0] = 0;
-
+            pthread_mutex_unlock(&mazeLock);
+            
             thread->history[i][0] = row;
             thread->history[i][1] = column;
+            
             paintMovement(column, row, colorCode); // Paint the movement in the maze
-
+            
             verifyAlternativePaths(row, column, MaxRows, MaxCols, NONE);
             
             break;
@@ -218,10 +225,14 @@ void *move(void*args){
         
     }
     paintThreadInfo(thread->history, MaxRows, i, thread->success, colorCode); // Print thread info
-    for (int j = 0; j < i; j++){
-        
-    }
     deactivateColor(colorCode);
+    
+    pthread_mutex_lock(&lock);
+    activeThreads--;
+    if (activeThreads == 0){
+        pthread_cond_signal(&cond);
+    }
+    pthread_mutex_unlock(&lock);
 
     free(thread);
 }
@@ -231,6 +242,9 @@ void *move(void*args){
 // returns: void
 
 void createThread(struct FunctionArgs args){
+    pthread_mutex_lock(&lock);
+    activeThreads++;
+    pthread_mutex_unlock(&lock);
 
     struct FunctionArgs *fargs = malloc(sizeof(struct FunctionArgs));;
     *fargs = args;
@@ -274,7 +288,19 @@ int main() {
     pthread_t mainThread;
     pthread_create(&mainThread, NULL, start, (void *)&fargs);
     
-    while(true){
+    pthread_mutex_init(&mazeLock, NULL);
+    pthread_mutex_init(&lock, NULL);
+    pthread_cond_init(&cond, NULL);
+    
+    pthread_mutex_lock(&lock);
+    while(activeThreads > 0 || threadActive == false){
+       pthread_cond_wait(&cond, &lock);
+       threadActive = true;
     }
+    pthread_mutex_unlock(&lock);
+    
+    printf("\nLaberinto resuelto! \n");
+    
+    
     return 0;
 }
