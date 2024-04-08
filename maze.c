@@ -51,6 +51,7 @@ pthread_mutex_t mazeLock = PTHREAD_MUTEX_INITIALIZER; // Mutex for the maze
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER; // Mutex for the activeThreads
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER; // Condition variable to signal the end of the program
 bool threadActive = false; // Flag to indicate if the threads are active
+bool printInfo = true; // Flag to indicate if the thread info should be printed
 int activeThreads = 0; // Counter for the active threads
 int maze[MAX_ROWS][MAX_COLS][2]; // Matrix representing the maze
 
@@ -216,7 +217,7 @@ void *move(void*args){
             thread->history[i][0] = row;
             thread->history[i][1] = column;
             
-            paintMovement(column, row, colorCode); // Paint the movement in the maze
+            if(printInfo) paintMovement(column, row, colorCode); // Paint the movement in the maze
             
             verifyAlternativePaths(row, column, MaxRows, MaxCols, NONE);
             
@@ -285,6 +286,12 @@ int main() {
     scanf("%s", filename); // Use %s to read a string
 
     read_maze(filename, maze, &rows, &cols);
+
+    char printInput[1]; // Allocate memory for the input
+    printf("Print thread info? (Y/N):");
+    scanf("%s", printInput); 
+    printInfo = strcmp(printInput, "Y") == 0; // Set the printInfo flag
+
     paintMaze(maze, cols, rows);
     
     // Main thread
