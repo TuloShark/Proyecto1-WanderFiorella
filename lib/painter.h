@@ -112,7 +112,6 @@ void paintMovement(int x, int y, int color)
         default: printf("%s\u2588%s",PINK,RESET); break;
     }
     sleep(1);
-    printf("\n");
 }
 
 // Function to paint the thread info
