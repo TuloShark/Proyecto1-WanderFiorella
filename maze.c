@@ -217,7 +217,7 @@ void *move(void*args){
             thread->history[i][0] = row;
             thread->history[i][1] = column;
             
-            if(printInfo) paintMovement(column, row, colorCode); // Paint the movement in the maze
+            paintMovement(column, row, colorCode); // Paint the movement in the maze
             
             verifyAlternativePaths(row, column, MaxRows, MaxCols, NONE);
             
@@ -227,7 +227,7 @@ void *move(void*args){
         
     }
     // Print thread info
-    paintThreadInfo(thread->history, MaxRows, i, thread->success, colorCode); // Print thread info
+    if(printInfo) paintThreadInfo(thread->history, MaxRows, i, thread->success, colorCode); // Print thread info
     deactivateColor(colorCode);
     
     // Decrement the activeThreads counter
