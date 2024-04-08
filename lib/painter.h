@@ -6,7 +6,7 @@
 // Global variables
 int colorsQuantity = 14;
 int threadCount = 0;
-int colors[14] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int colors[14] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 // Function to move the cursor to a specific position
 // params: x - the x coordinate of the position
